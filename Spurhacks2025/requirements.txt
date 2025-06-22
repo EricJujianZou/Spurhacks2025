@@ -1,5 +1,0 @@
-
-google-generativeai
-pydantic
-tenacity
-python-dotenv

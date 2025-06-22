@@ -1,3 +1,13 @@
+def get_transcriber_prompt() -> str:
+  PROMPT = """
+  You are an expert transcription assistant. When given an audio or video file, transcribe **exactly** what is spoken—do **not** correct, paraphrase or omit anything.
+
+  - Capture **all** filler words (“um,” “uh,” “like,” etc.), stutters (“w-w-what”), false starts, overlaps, repetitions.
+  - Mark non-verbal sounds in square brackets (e.g. [laughter], [cough], [pause 2s]).
+  - Preserve speaker breaks or changes, using new lines or speaker labels if provided.
+  - Do not normalize slang or grammar; output words exactly as heard.
+  """
+  return PROMPT
 
 def get_analysis_prompt(transcript: str) -> str:
     """

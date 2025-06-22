@@ -6,20 +6,22 @@ from tenacity import retry, stop_after_attempt, wait_random_exponential, retry_i
 from pydantic import ValidationError
 from dotenv import load_dotenv
 
-from .schemas import SpeechAnalysisResult
-from .prompts import get_analysis_prompt
+from models import SpeechAnalysisResult
+from api.tools.prompts import get_analysis_prompt
+
+from config import settings
 
 # --- 1. Load Environment from .env---
-load_dotenv()
-API_KEY = os.getenv('GEMINI_API_KEY')
-if not API_KEY:
-    raise ValueError("GEMINI_API_KEY environment variable not set.")
+# load_dotenv()
+# API_KEY = os.getenv('GEMINI_API_KEY')
+# if not API_KEY:
+#     raise ValueError("GEMINI_API_KEY environment variable not set.")
 
-# --- 2. Centralized Client and Model Configuration w the API key.
+# --- Centralized Client and Model Configuration w the API key.
 # 
 # REPLACE WITH YOUR OWN API KEY BY MAKING A .ENV!!!! ---
 
-client = genai.Client(api_key=API_KEY)
+client = genai.Client(api_key=settings.gemini_api_key)
 
 #error handling and retrying
 

@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 
-from .routes.transcribe import router as analuyze_router
+from api.routes.transcribe import router as analyze_router
 
 api_router = APIRouter()
 api_router.include_router(
-    analuyze_router,
+    analyze_router,
     prefix="/analyze",
     tags=["analyze"]
 )

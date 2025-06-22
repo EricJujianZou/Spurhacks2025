@@ -6,22 +6,13 @@ from fastapi.responses import JSONResponse
 
 from config import settings
 from exceptions import AudioExtractionError, TranscriptionError, UnsupportedFileType
-from models import TranscriptionResponse
+from models import SpeechAnalysisResult
 from openai import OpenAI
-from api.src.text_feedback.text_gemini import analyze_transcript
-from api.src.text_feedback.schemas import SpeechAnalysisResult
+from api.tools.text_gemini import analyze_transcript
+from api.tools.prompts import get_transcriber_prompt
+
 
 router = APIRouter()
-
-PROMPT = """
-You are an expert transcription assistant. When given an audio or video file, transcribe **exactly** what is spoken—do **not** correct, paraphrase or omit anything.
-
-- Capture **all** filler words (“um,” “uh,” “like,” etc.), stutters (“w-w-what”), false starts, overlaps, repetitions.
-- Mark non-verbal sounds in square brackets (e.g. [laughter], [cough], [pause 2s]).
-- Preserve speaker breaks or changes, using new lines or speaker labels if provided.
-- Do not normalize slang or grammar; output words exactly as heard.
-"""
-
 
 def convert_webm_blob_to_mp3_bytes(
     webm_blob: bytes,
@@ -57,7 +48,7 @@ def convert_webm_blob_to_mp3_bytes(
     return proc.stdout
 
 
-@router.post("", response_model=TranscriptionResponse)
+@router.post("")
 async def analyze(file: UploadFile = File(...)):
     if file.content_type != "video/webm":
         raise UnsupportedFileType("Please upload a WebM file (content_type=video/webm).")
@@ -74,7 +65,7 @@ async def analyze(file: UploadFile = File(...)):
             model="gpt-4o-transcribe",
             file=mp3_bytes,
             language="en",
-            prompt=PROMPT.strip(),
+            prompt=get_transcriber_prompt().strip(),
         )
     except Exception as e:
         raise TranscriptionError("Failed to transcribe audio") from e

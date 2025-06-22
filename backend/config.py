@@ -8,7 +8,6 @@ class Settings(BaseSettings):
     sample_rate: int = 16000
     audio_channels: int = 1
     whisper_model_size: str = "base"
-    
-
+   
 settings = Settings()
 
