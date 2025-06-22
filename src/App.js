@@ -66,11 +66,11 @@ function App() {
         </button>
 
         {/* Dashboard Preview Image */}
-        <div className="relative w-full mt-2xl">
+        <div className="relative w-full mt-40">
           <img 
             src="/images/dashboard.png"
             alt="Speech Analysis Dashboard showing confidence scores, speech composition, video player, and personalized feedback"
-            className="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-auto object-cover rounded-xl scale-110"
+            className="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-auto object-cover rounded-xl scale-125"
           />
         </div>
       </div>
