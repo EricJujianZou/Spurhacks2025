@@ -43,15 +43,19 @@ function App() {
 
   // Main landing page
   return (
-    <div className="h-screen bg-page-bg flex items-center py-lg overflow-hidden">
+    <div className="h-screen bg-page-bg flex items-center py-lg overflow-hidden relative">
+      {/* Hero Section - Absolutely positioned title */}
+      <h1 
+        className="font-manrope text-h1 font-bold text-text-primary text-center max-w-4xl absolute left-1/2 transform -translate-x-1/2 z-10" 
+        style={{ top: '27%' }}
+      >
+        Judgement free speech feedback with AI.
+      </h1>
+      
       <div 
         className="max-w-layout mx-auto px-xl flex flex-col items-center gap-lg w-full h-full" 
         style={{ marginTop: '45rem' }}
       >
-        {/* Hero Section */}
-        <h1 className="font-manrope text-h1 font-bold text-text-primary text-center max-w-4xl -mt-20">
-          Judgement free speech feedback with AI.
-        </h1>
 
         <h2 className="font-manrope text-h2 font-normal text-text-secondary text-center max-w-2xl">
           Practice what you preach, literally.
@@ -66,7 +70,7 @@ function App() {
         </button>
 
         {/* Dashboard Preview Image */}
-        <div className="relative w-full mt-40">
+        <div className="relative w-full mt-24">
           <img 
             src="/images/dashboard.png"
             alt="Speech Analysis Dashboard showing confidence scores, speech composition, video player, and personalized feedback"

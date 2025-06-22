@@ -40,6 +40,14 @@ function Recorder({ onClose }) {
   const mediaRecorderRef = useRef(null);   // MediaRecorder instance
   const timerRef = useRef(null);           // Timer for recording duration
   const chunksRef = useRef([]);            // Video data chunks
+  // Eye contact detection refs
+  const modelRef = useRef(null);          // Teachable Machine model instance
+  const eyeContactFramesRef = useRef(0);  // Number of frames with eye contact
+  const totalFramesRef = useRef(0);       // Total frames analysed
+  const predictionIntervalRef = useRef(null); // Interval ID for predictions
+
+  // URL path to your Teachable Machine model (placed in public/my_model)
+  const TM_MODEL_URL = 'https://teachablemachine.withgoogle.com/models/9kLQtUrC6/';
 
   // ========== STATE ==========
   const [isRecording, setIsRecording] = useState(false);
@@ -75,13 +83,108 @@ function Recorder({ onClose }) {
     }
   }, []);
 
+  /**
+   * Load Teachable Machine eye-contact model if not already loaded
+   */
+  const loadEyeContactModel = useCallback(async () => {
+    if (modelRef.current) {
+      console.log('Eye contact model already loaded');
+      return;
+    }
+    
+    if (!window.tmImage) {
+      console.error('Teachable Machine library not loaded - window.tmImage is undefined');
+      return;
+    }
+    
+    try {
+      console.log('Loading eye contact model from:', TM_MODEL_URL);
+      const modelURL = `${TM_MODEL_URL}model.json`;
+      const metadataURL = `${TM_MODEL_URL}metadata.json`;
+      
+      console.log('Model URL:', modelURL);
+      console.log('Metadata URL:', metadataURL);
+      
+      modelRef.current = await window.tmImage.load(modelURL, metadataURL);
+      console.log('Eye contact model loaded successfully:', modelRef.current);
+    } catch (err) {
+      console.error('Failed to load eye contact model:', err);
+      console.error('Model URL attempted:', TM_MODEL_URL);
+    }
+  }, []);
+
+  /**
+   * Start prediction loop to evaluate eye contact while recording
+   */
+  const startEyeContactDetection = useCallback(async () => {
+    console.log('Starting eye contact detection...');
+    await loadEyeContactModel();
+    
+    if (!modelRef.current) {
+      console.error('Eye contact model not loaded, cannot start detection');
+      return;
+    }
+    
+    if (!videoRef.current) {
+      console.error('Video element not available, cannot start detection');
+      return;
+    }
+
+    eyeContactFramesRef.current = 0;
+    totalFramesRef.current = 0;
+    console.log('Eye contact detection initialized, starting prediction loop...');
+
+    // Run prediction roughly every 300ms
+    predictionIntervalRef.current = setInterval(async () => {
+      try {
+        const predictions = await modelRef.current.predict(videoRef.current);
+        if (!predictions || predictions.length === 0) {
+          console.warn('No predictions returned from model');
+          return;
+        }
+
+        // Log predictions for debugging (only every 10th frame to avoid spam)
+        if (totalFramesRef.current % 10 === 0) {
+          console.log('Predictions:', predictions);
+        }
+
+        // Assume the class "Eye Contact" (index 0) indicates looking at camera
+        const eyeContactProb = predictions[0].probability;
+        totalFramesRef.current += 1;
+        if (eyeContactProb >= 0.5) {
+          eyeContactFramesRef.current += 1;
+        }
+        
+        // Log progress every 10 frames
+        if (totalFramesRef.current % 10 === 0) {
+          console.log(`Eye contact progress: ${eyeContactFramesRef.current}/${totalFramesRef.current} frames`);
+        }
+      } catch (err) {
+        console.error('Eye contact prediction failed:', err);
+      }
+    }, 300);
+  }, [loadEyeContactModel]);
+
+  /**
+   * Stop prediction loop
+   */
+  const stopEyeContactDetection = useCallback(() => {
+    if (predictionIntervalRef.current) {
+      clearInterval(predictionIntervalRef.current);
+      predictionIntervalRef.current = null;
+    }
+  }, []);
+
   // ========== EFFECTS ==========
 
   /**
-   * Initialize media stream on component mount
+   * Initialize media stream on component mount and when returning to recorder view
    * Requests camera and microphone permissions and sets up video preview
    */
   useEffect(() => {
+    // Only initialize media when in recorder view
+    if (currentView !== 'recorder') return;
+
     let isMounted = true;
 
     async function initializeMedia() {
@@ -123,12 +226,14 @@ function Recorder({ onClose }) {
 
     initializeMedia();
 
-    // Cleanup on unmount
+    // Cleanup when leaving recorder view or unmounting
     return () => {
       isMounted = false;
-      cleanup();
+      if (currentView !== 'recorder') {
+        cleanup();
+      }
     };
-  }, [cleanup]);
+  }, [cleanup, currentView]);
 
   // ========== EVENT HANDLERS ==========
 
@@ -141,6 +246,17 @@ function Recorder({ onClose }) {
 
     const blob = new Blob(chunksRef.current, { type: 'video/webm' });
     setRecordingBlob(blob);
+
+    // Compute eye contact score percentage
+    const eyeContactScore = totalFramesRef.current > 0 ?
+      Math.round((eyeContactFramesRef.current / totalFramesRef.current) * 100) : 0;
+
+    // Log eye contact score to console
+    console.log(`Eye Contact Score: ${eyeContactScore}% (${eyeContactFramesRef.current}/${totalFramesRef.current} frames)`);
+
+    // Store preliminary analysis data with eyeContactScore; will merge later
+    setAnalysisData(prev => ({ ...(prev || {}), eyeContactScore }));
+
     setCurrentView('review');
   }, []);
 
@@ -165,6 +281,9 @@ function Recorder({ onClose }) {
       
       mediaRecorderRef.current = recorder;
       chunksRef.current = [];
+
+      // Begin eye-contact detection
+      startEyeContactDetection();
 
       // Set up event handlers
       recorder.ondataavailable = (event) => {
@@ -198,7 +317,7 @@ function Recorder({ onClose }) {
       console.error('Failed to start recording:', err);
       setError('Failed to start recording');
     }
-  }, [handleRecordingComplete]);
+  }, [handleRecordingComplete, startEyeContactDetection]);
 
   /**
    * Stops video recording
@@ -210,6 +329,8 @@ function Recorder({ onClose }) {
     }
     
     setIsRecording(false);
+    // Stop eye-contact detection loop
+    stopEyeContactDetection();
     
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -258,8 +379,8 @@ function Recorder({ onClose }) {
       const result = await analyzeVideo(recordingBlob);
       console.log('Integration ready! Backend returned:', result);
 
-      // Save analysis results so the dashboard can display them
-      setAnalysisData(result);
+      // Merge backend result with locally computed eye contact score (override if backend provides)
+      setAnalysisData(prev => ({ ...result, eyeContactScore: prev?.eyeContactScore }));
 
       // Switch to dashboard now that analysis is complete
       setCurrentView('dashboard');
