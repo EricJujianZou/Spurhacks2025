@@ -8,8 +8,8 @@ from config import settings
 from exceptions import AudioExtractionError, TranscriptionError, UnsupportedFileType
 from models import TranscriptionResponse
 from openai import OpenAI
-from src.text_feedback.text_gemini import analyze_transcript
-from src.text_feedback.schemas import SpeechAnalysisResult
+from api.src.text_feedback.text_gemini import analyze_transcript
+from api.src.text_feedback.schemas import SpeechAnalysisResult
 
 router = APIRouter()
 
