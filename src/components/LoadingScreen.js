@@ -39,9 +39,10 @@ const LoadingIcon = () => (
  * 
  * @param {Object} props - Component props
  * @param {Function} props.onComplete - Callback function called when loading completes
+ * @param {boolean} props.autoComplete - Whether to automatically complete loading
  * @returns {JSX.Element} Loading screen with progress and tips
  */
-const LoadingScreen = ({ onComplete }) => {
+const LoadingScreen = ({ onComplete, autoComplete = true }) => {
   // State for progress percentage (0-100)
   const [progress, setProgress] = useState(0);
   
@@ -63,17 +64,19 @@ const LoadingScreen = ({ onComplete }) => {
       setProgress(prev => {
         if (prev >= 100) {
           clearInterval(timer);
-          // Complete loading after brief delay
-          setTimeout(() => onComplete(), 500);
+          if (autoComplete && onComplete) {
+            // Complete loading after brief delay
+            setTimeout(() => onComplete(), 500);
+          }
           return 100;
         }
         // Increment progress by 2% every 100ms (5 seconds total)
-        return prev + 2;
+        return prev + 1;
       });
     }, 100);
 
     return () => clearInterval(timer);
-  }, [onComplete]);
+  }, [onComplete, autoComplete]);
 
   // Step progression effect
   useEffect(() => {
@@ -124,13 +127,7 @@ const LoadingScreen = ({ onComplete }) => {
             {Math.round(progress)}% Complete
           </p>
 
-          {/* Helpful Tip Box */}
-          <div className="mt-8 p-4 bg-emerald-50 rounded-lg">
-            <p className="text-sm text-emerald-700">
-              <span className="font-semibold">💡 Tip:</span> Great speakers pause for 2-3 seconds 
-              after important points to let the audience absorb the information.
-            </p>
-          </div>
+        
           
         </div>
       </div>

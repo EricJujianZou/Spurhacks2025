@@ -11,13 +11,15 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   MEDIA_CONSTRAINTS, 
-  MIME_TYPES
+  MIME_TYPES,
+  API_CONFIG
 } from '../constants';
 import { 
   formatTime, 
   getBestMimeType, 
   isGetUserMediaSupported 
 } from '../utils';
+import { analyzeVideo } from '../utils/apiCall';
 import LoadingScreen from './LoadingScreen';
 import Dashboard from './Dashboard';
 
@@ -244,11 +246,22 @@ function Recorder({ onClose }) {
 
   /**
    * Handles analyze speech button click
-   * Transitions from review to loading/analysis
+   * Makes API call to backend and transitions to loading/analysis
    */
-  const handleAnalyzeSpeech = useCallback(() => {
+  const handleAnalyzeSpeech = useCallback(async () => {
     setCurrentView('loading');
-  }, []);
+
+    try {
+      console.log('Starting speech analysis');
+      const result = await analyzeVideo(recordingBlob);
+      console.log('Integration ready! Backend returned:', result);
+
+      // Switch to dashboard now that analysis is complete
+      setCurrentView('dashboard');
+    } catch (error) {
+      console.error('API call failed:', error);
+    }
+  }, [recordingBlob]);
 
   /**
    * Handles re-record button click
@@ -266,7 +279,7 @@ function Recorder({ onClose }) {
    * Renders the loading screen
    */
   if (currentView === 'loading') {
-    return <LoadingScreen onComplete={handleLoadingComplete} />;
+    return <LoadingScreen onComplete={handleLoadingComplete} autoComplete={false} />;
   }
 
   /**
@@ -320,7 +333,7 @@ function Recorder({ onClose }) {
           )}
 
           {/* Recording Duration */}
-          <div className="font-mono text-xl font-semibold text-text-primary">
+          <div className="font-manrope text-xl font-bold text-text-primary">
             Recording Duration: {formatTime(elapsed)}
           </div>
 
@@ -409,7 +422,7 @@ function Recorder({ onClose }) {
         />
 
         {/* Recording Timer */}
-        <div className="font-mono text-2xl font-semibold text-text-primary min-h-8 flex items-center">
+        <div className="font-manrope text-2xl font-bold text-text-primary min-h-8 flex items-center">
           {formatTime(elapsed)}
         </div>
 

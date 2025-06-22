@@ -6,6 +6,18 @@
  */
 
 /**
+ * API Configuration
+ * Update these URLs when deploying to production or changing backend location
+ */
+export const API_CONFIG = {
+  BASE_URL: 'http://localhost:8000',
+  ENDPOINTS: {
+    ANALYZE: '/api/v1/transcribe', // Backend endpoint for complete speech analysis
+    HEALTH: '/'
+  }
+};
+
+/**
  * Media recording constraints for getUserMedia API
  * Defines the video and audio settings for recording
  */
@@ -30,19 +42,3 @@ export const MIME_TYPES = {
   preferred: 'video/webm;codecs=vp9,opus', // Best quality and compression
   fallback: 'video/webm'                   // Basic WebM format
 };
-
-/**
- * Mock dashboard data for the landing page preview
- * This is used only for the static preview on the main page
- */
-export const DASHBOARD_DATA = {
-  title: "Speech Analysis Dashboard",
-  revenue: "$24,500",
-  activities: [
-    "New recording uploaded",
-    "Analysis completed",
-    "Report generated",
-    "Feedback sent"
-  ],
-  chartData: [20, 45, 30, 60, 40, 80, 55, 90, 75, 95]
-}; 
