@@ -37,8 +37,8 @@ Evaluate the speech based on the metrics defined in the JSON schema below.
 {transcript}
 </transcript>
 
-MAKE SURE TO INCLUDE THE FOLLOWING ELEMENT IN YOUR RESPONSE:
-Speech length: {video_length}
+MAKE SURE TO INCLUDE THE FOLLOWING FIELD IN YOUR RESPONSE:
+speechLength: {video_length}
 
 Your response MUST be a single, valid JSON object that strictly adheres to the following schema. Do not include any text or formatting outside of this JSON object.
 
@@ -48,6 +48,7 @@ Your response MUST be a single, valid JSON object that strictly adheres to the f
   "description": "Standard output format for the Speech Analyzer AI.",
   "additionalProperties": false,
   "required": [
+    "speechLength"
     "overallPercentage",
     "confidenceScore",
     "eyeContactScore",
@@ -60,10 +61,14 @@ Your response MUST be a single, valid JSON object that strictly adheres to the f
     "speechComposition",
     "strengths",
     "weaknesses",
-    "nextSteps",
-    "speechLength"
+    "nextSteps"
   ],
   "properties": {{
+    "speechLength": {{
+      "type": "string",
+      "description": "The length of the speech in seconds.",
+      "minimum": 0
+    }},
     "overallPercentage": {{
       "type": "number",
       "description": "Aggregate performance score (0–100).",
@@ -114,11 +119,7 @@ Your response MUST be a single, valid JSON object that strictly adheres to the f
       "description": "Number of significant pauses detected.",
       "minimum": 0
     }},
-     "speechLength": {{
-      "type": "string",
-      "description": "The length of the speech in seconds.",
-      "minimum": 0
-    }},
+     
     "speechComposition": {{
       "type": "object",
       "description": "Percentage breakdown of the speech style; values should sum to 100.",

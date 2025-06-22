@@ -1,6 +1,7 @@
 import subprocess
 from typing import Union, Tuple
 import re
+import math
 
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
@@ -132,5 +133,15 @@ async def analyze(file: UploadFile = File(...)):
     print(transcript)
     analysis: SpeechAnalysisResult = analyze_transcript(transcript, video_length=str(duration))
     result_dict = analysis.model_dump()
+    
+    total_secs = round(duration)
+    hours   = total_secs // 3600
+    minutes = (total_secs % 3600) // 60
+    seconds = total_secs % 60
+
+    time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
+    result_dict["speechLength"] = str(time_str)
+
     print(result_dict)
     return JSONResponse(content=result_dict, status_code=200)
