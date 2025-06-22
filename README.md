@@ -1,7 +1,4 @@
 # Spurhacks2025
-
-Spurhacks2025 is a full-stack project developed for SpurHacks, featuring a robust backend powered by Python and a modern frontend built with React and Tailwind CSS.
-
 ---
 
 ## Table of Contents
@@ -20,13 +17,12 @@ Spurhacks2025 is a full-stack project developed for SpurHacks, featuring a robus
 
 ## Project Overview
 
-_Spurhacks2025 is a platform developed for SpurHacks, designed to [insert project purpose/goal here, e.g., connect students, provide AI-powered tools, etc.]._
+We are an AI B2B SAAS helping small and medium sized-businesses to reduce HR interviewing and new recruit onboarding costs, by using a combination of LLM and CV in analyzing users' speeches.
 
 ## Features
-- AI-powered backend using Google GenAI
+- AI-powered backend using Google GenAI, OpenAI
 - Modern, responsive frontend with React and Tailwind CSS
 - Modular code structure for easy development
-- [Add more features as needed]
 
 ## Tech Stack
 
@@ -40,7 +36,7 @@ _Spurhacks2025 is a platform developed for SpurHacks, designed to [insert projec
 **Frontend:**
 - React
 - Tailwind CSS
-- tensorflow.js
+- TensorFlow.js
 
 ---
 
