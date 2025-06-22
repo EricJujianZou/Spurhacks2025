@@ -7,8 +7,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from fastapi import APIRouter, File, UploadFile, Depends
 from fastapi.responses import JSONResponse
 
-import whisper
-
 from config import settings
 from exceptions import (
     UnsupportedFileType,
@@ -16,6 +14,15 @@ from exceptions import (
     TranscriptionError
 )
 from models import TranscriptionResponse
+
+prompt = """
+    You are an expert transcription assistant. When given an audio or video file, transcribe **exactly** what is spoken—do **not** correct, paraphrase or omit anything.  
+    
+    - Capture **all** filler words (“um,” “uh,” “like,” etc.), stutters (“w-w-what”), false starts, overlaps, repetitions.  
+    - Mark non-verbal sounds in square brackets (e.g. [laughter], [cough], [pause 2s]).  
+    - Preserve speaker breaks or changes, using new lines or speaker labels if provided.  
+    - Do not normalize slang or grammar; output words exactly as heard.  
+"""
 
 router = APIRouter()
 # _model = whisper.load_model(settings.whisper_model_size)
@@ -28,10 +35,11 @@ async def transcribe_video(file: UploadFile = File(...)):
     )
     try:
         transcript = client.audio.transcriptions.create(
-            model="Whisper-1",
-            file=file,
-            language="en"
-        )       
+            model="gpt-4o-transcribe", 
+            file=audio_file,
+            language="en",
+            prompt=prompt
+        )
         text = transcript
         print(text)
     except Exception as e:
