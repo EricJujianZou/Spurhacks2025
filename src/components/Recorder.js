@@ -47,6 +47,7 @@ function Recorder({ onClose }) {
   const [error, setError] = useState(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [recordingBlob, setRecordingBlob] = useState(null);
+  const [analysisData, setAnalysisData] = useState(null);
   const [currentView, setCurrentView] = useState('recorder'); // 'recorder', 'review', 'loading', 'dashboard'
 
   // ========== UTILITY FUNCTIONS ==========
@@ -242,6 +243,7 @@ function Recorder({ onClose }) {
   const handleDashboardBack = useCallback(() => {
     setCurrentView('recorder');
     setRecordingBlob(null);
+    setAnalysisData(null);
   }, []);
 
   /**
@@ -256,10 +258,16 @@ function Recorder({ onClose }) {
       const result = await analyzeVideo(recordingBlob);
       console.log('Integration ready! Backend returned:', result);
 
+      // Save analysis results so the dashboard can display them
+      setAnalysisData(result);
+
       // Switch to dashboard now that analysis is complete
       setCurrentView('dashboard');
     } catch (error) {
       console.error('API call failed:', error);
+      setError('Analysis failed. Please try again.');
+      // Return to review screen so user can retry or re-record
+      setCurrentView('review');
     }
   }, [recordingBlob]);
 
@@ -290,6 +298,7 @@ function Recorder({ onClose }) {
       <Dashboard 
         onBack={handleDashboardBack} 
         recordingBlob={recordingBlob}
+        analysisData={analysisData}
       />
     );
   }

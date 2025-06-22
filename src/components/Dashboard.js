@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import mockData from '../mockdata.json';
 
 // Simple icons as SVG components
 const TrendingUpIcon = () => (
@@ -78,48 +77,55 @@ const VolumeIcon = () => (
   </svg>
 );
 
-function Dashboard({ onBack, recordingBlob }) {
+function Dashboard({ onBack, recordingBlob, analysisData }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(75);
+
+  // If no data yet, render nothing (parent keeps showing LoadingScreen)
+  if (!analysisData) {
+    return null;
+  }
+
+  const data = analysisData;
 
   const mainMetrics = [
     {
       title: "Confidence Score",
-      value: `${mockData.confidenceScore}%`,
+      value: `${data.confidenceScore}%`,
       color: "bg-emerald-600",
       icon: AwardIcon,
-      progress: mockData.confidenceScore,
+      progress: data.confidenceScore,
     },
     {
       title: "Eye Contact",
-      value: `${mockData.eyeContactScore}%`,
+      value: `${data.eyeContactScore}%`,
       color: "bg-white",
       textColor: "text-gray-900",
       icon: EyeIcon,
-      progress: mockData.eyeContactScore,
+      progress: data.eyeContactScore,
     },
     {
       title: "Clarity Score",
-      value: `${mockData.clarityScore}%`,
+      value: `${data.clarityScore}%`,
       color: "bg-white",
       textColor: "text-gray-900",
       icon: TargetIcon,
-      progress: mockData.clarityScore,
+      progress: data.clarityScore,
     },
     {
       title: "Engagement Score",
-      value: `${mockData.engagementScore}%`,
+      value: `${data.engagementScore}%`,
       color: "bg-white",
       textColor: "text-gray-900",
       icon: TrendingUpIcon,
-      progress: mockData.engagementScore,
+      progress: data.engagementScore,
     },
   ];
 
   const speechComposition = [
-    { label: "Persuasive", percentage: mockData.speechComposition.persuasive, color: "bg-emerald-500" },
-    { label: "Informative", percentage: mockData.speechComposition.informative, color: "bg-blue-500" },
-    { label: "Demonstrative", percentage: mockData.speechComposition.demonstrative, color: "bg-orange-500" },
+    { label: "Persuasive", percentage: data.speechComposition.persuasive, color: "bg-emerald-500" },
+    { label: "Informative", percentage: data.speechComposition.informative, color: "bg-blue-500" },
+    { label: "Demonstrative", percentage: data.speechComposition.demonstrative, color: "bg-orange-500" },
   ];
 
   const handleSliderChange = (setter) => (e) => {
@@ -293,25 +299,25 @@ function Dashboard({ onBack, recordingBlob }) {
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-emerald-100 text-xs font-medium">Words Spoken</span>
-                  <span className="font-bold text-sm">{mockData.wordsSpoken}</span>
+                  <span className="font-bold text-sm">{data.wordsSpoken}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-emerald-100 text-xs font-medium">Speaking Rate</span>
-                  <span className="font-bold text-sm">{mockData.speakingRate} WPM</span>
+                  <span className="font-bold text-sm">{data.speakingRate} WPM</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-emerald-100 text-xs font-medium">Filler Words</span>
-                  <span className="font-bold text-sm">{mockData.fillerWordCount}</span>
+                  <span className="font-bold text-sm">{data.fillerWordCount}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-emerald-100 text-xs font-medium">Pauses</span>
-                  <span className="font-bold text-sm">{mockData.pauses}</span>
+                  <span className="font-bold text-sm">{data.pauses}</span>
                 </div>
               </div>
 
               <div className="pt-3 border-t border-emerald-500">
                 <div className="text-center">
-                  <div className="text-xl font-bold mb-1">{mockData.overallPercentage}%</div>
+                  <div className="text-xl font-bold mb-1">{data.overallPercentage}%</div>
                   <p className="text-emerald-100 text-xs font-medium">Overall Grade</p>
                 </div>
               </div>
@@ -341,10 +347,10 @@ function Dashboard({ onBack, recordingBlob }) {
 
                 <div className="space-y-2 text-sm text-gray-700 leading-relaxed">
                   <p className="font-medium">
-                    <span className="text-emerald-600 font-bold">Strengths:</span> {mockData.strengths}
+                    <span className="text-emerald-600 font-bold">Strengths:</span> {data.strengths}
                   </p>
                   <p className="font-medium">
-                    <span className="text-blue-600 font-bold">Areas for Improvement:</span> {mockData.weaknesses}
+                    <span className="text-blue-600 font-bold">Areas for Improvement:</span> {data.weaknesses}
                   </p>
                 </div>
               </div>
@@ -353,7 +359,7 @@ function Dashboard({ onBack, recordingBlob }) {
                 <div className="p-3 bg-gray-50 rounded-lg">
                   <h4 className="text-gray-900 font-bold mb-2 text-sm">Action Items:</h4>
                   <ul className="text-xs text-gray-600 space-y-1 font-medium">
-                    {mockData.nextSteps.map((step, index) => (
+                    {data.nextSteps.map((step, index) => (
                       <li key={index}>• {step}</li>
                     ))}
                   </ul>
