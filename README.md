@@ -35,7 +35,7 @@ _Spurhacks2025 is a platform developed for SpurHacks, designed to [insert projec
 - FastAPI 
 - google-genai
 - OpenAI
-- 
+- Google Gemini
 
 **Frontend:**
 - React
