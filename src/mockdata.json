@@ -1,0 +1,23 @@
+{
+    "overallPercentage": 82.3,
+    "confidenceScore": 88,
+    "eyeContactScore": 76,
+    "clarityScore": 90,
+    "engagementScore": 80,
+    "wordsSpoken": 724,
+    "speakingRate": 145.6,
+    "fillerWordCount": 9,
+    "pauses": 12,
+    "speechComposition": {
+      "persuasive": 45,
+      "informative": 40,
+      "demonstrative": 15
+    },
+    "strengths": "Your voice projected confidence and clarity, making your key points easy to follow. Strong persuasive elements kept the audience invested throughout.",
+    "weaknesses": "Eye contact was inconsistent, causing occasional disconnect with listeners. A few filler words and uneven pacing slightly reduced overall polish.",
+    "nextSteps": [
+      "Practice maintaining steady eye contact by focusing on different sections of the audience every few seconds.",
+      "Rehearse with a metronome to stabilize pacing and reduce filler words.",
+      "Record and review practice sessions to identify and eliminate verbal tics."
+    ]
+  }
