@@ -37,15 +37,14 @@ RETRYABLE_EXCEPTIONS = (
     wait=wait_random_exponential(min=1, max=30),
     stop=stop_after_attempt(2)
 )
-def analyze_transcript(transcript: str) -> SpeechAnalysisResult:
+def analyze_transcript(transcript: str, video_length: str) -> SpeechAnalysisResult:
     """
     Analyzes a speech transcript using the Gemini model and returns structured feedback.
     (Docstring and args remain the same)
     """
-    prompt = get_analysis_prompt(transcript)
+    prompt = get_analysis_prompt(transcript, video_length)
 
     try:
-
         response = client.models.generate_content(
             model = "gemini-2.0-flash",
             contents=prompt,

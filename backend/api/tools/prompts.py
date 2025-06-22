@@ -1,15 +1,16 @@
 def get_transcriber_prompt() -> str:
-  PROMPT = """
+  PROMPT = f"""
   You are an expert transcription assistant. When given an audio or video file, transcribe **exactly** what is spoken—do **not** correct, paraphrase or omit anything.
 
   - Capture **all** filler words (“um,” “uh,” “like,” etc.), stutters (“w-w-what”), false starts, overlaps, repetitions.
   - Mark non-verbal sounds in square brackets (e.g. [laughter], [cough], [pause 2s]).
   - Preserve speaker breaks or changes, using new lines or speaker labels if provided.
   - Do not normalize slang or grammar; output words exactly as heard.
+  
   """
   return PROMPT
 
-def get_analysis_prompt(transcript: str) -> str:
+def get_analysis_prompt(transcript: str, video_length: str) -> str:
     """
     Generates the prompt for the Gemini model to analyze a speech transcript.
 
@@ -36,6 +37,9 @@ Evaluate the speech based on the metrics defined in the JSON schema below.
 {transcript}
 </transcript>
 
+MAKE SURE TO INCLUDE THE FOLLOWING ELEMENT IN YOUR RESPONSE:
+Speech length: {video_length}
+
 Your response MUST be a single, valid JSON object that strictly adheres to the following schema. Do not include any text or formatting outside of this JSON object.
 
 {{
@@ -56,7 +60,8 @@ Your response MUST be a single, valid JSON object that strictly adheres to the f
     "speechComposition",
     "strengths",
     "weaknesses",
-    "nextSteps"
+    "nextSteps",
+    "speechLength"
   ],
   "properties": {{
     "overallPercentage": {{
@@ -107,6 +112,11 @@ Your response MUST be a single, valid JSON object that strictly adheres to the f
     "pauses": {{
       "type": "integer",
       "description": "Number of significant pauses detected.",
+      "minimum": 0
+    }},
+     "speechLength": {{
+      "type": "string",
+      "description": "The length of the speech in seconds.",
       "minimum": 0
     }},
     "speechComposition": {{
