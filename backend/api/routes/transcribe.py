@@ -24,24 +24,36 @@ prompt = """
     - Do not normalize slang or grammar; output words exactly as heard.  
 """
 
+
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from .src.text_feedback.text_gemini import analyze_transcript
+from .src.text_feedback.schemas import SpeechAnalysisResult
+
+
 router = APIRouter()
 # _model = whisper.load_model(settings.whisper_model_size)
 
-@router.post("", response_model=TranscriptionResponse)
-async def transcribe_video(file: UploadFile = File(...)):
-    client = OpenAI(
-        api_key=settings.speechapi,
-        base_url="https://api.lemonfox.ai/v1",
-    )
-    try:
-        transcript = client.audio.transcriptions.create(
-            model="gpt-4o-transcribe", 
-            file=audio_file,
-            language="en",
-            prompt=prompt
+@router.post("")
+async def analyze(file: UploadFile = File(...)):
+    with open(temp_file_path, "rb") as audio_file:
+    
+        client = OpenAI(
+            api_key=settings.speechapi,
+            base_url="https://api.lemonfox.ai/v1",
         )
-        text = transcript
-        print(text)
+        try:
+            transcript = client.audio.transcriptions.create(
+                model="gpt-4o-transcribe", 
+                file=audio_file,
+                language="en",
+                prompt=prompt
+            )
+            text = transcript
+            print(text)
     except Exception as e:
         raise TranscriptionError(str(e))
     finally:
@@ -49,5 +61,9 @@ async def transcribe_video(file: UploadFile = File(...)):
         for p in (video_path, audio_path):
             if os.path.exists(p):
                 os.remove(p)
+    
+    result: SpeechAnalysisResult = analyze_transcript(transcript)
 
-    return JSONResponse(content={"transcription": text})
+    result = result.model_dump_json(indent=2)
+
+    return JSONResponse(content={result})

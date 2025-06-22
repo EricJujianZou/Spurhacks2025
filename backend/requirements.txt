@@ -3,3 +3,4 @@ uvicorn
 openai
 requests 
 python-multipart
+google-genai
