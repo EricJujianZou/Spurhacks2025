@@ -118,7 +118,6 @@ function Recorder({ onClose }) {
    */
   const startEyeContactDetection = useCallback(async () => {
     console.log('Starting eye contact detection...');
-    await loadEyeContactModel();
     
     if (!modelRef.current) {
       console.error('Eye contact model not loaded, cannot start detection');
@@ -163,7 +162,7 @@ function Recorder({ onClose }) {
         console.error('Eye contact prediction failed:', err);
       }
     }, 300);
-  }, [loadEyeContactModel]);
+  }, []);
 
   /**
    * Stop prediction loop
@@ -197,8 +196,11 @@ function Recorder({ onClose }) {
           throw new Error('getUserMedia is not supported in this browser');
         }
 
-        // Request media access
-        const mediaStream = await navigator.mediaDevices.getUserMedia(MEDIA_CONSTRAINTS);
+        // Request media access and load eye contact model in parallel
+        const [mediaStream] = await Promise.all([
+          navigator.mediaDevices.getUserMedia(MEDIA_CONSTRAINTS),
+          loadEyeContactModel()
+        ]);
         
         // Check if component is still mounted
         if (!isMounted) {
@@ -519,7 +521,7 @@ function Recorder({ onClose }) {
       </div>
 
       {/* Recording Interface */}
-      <div className="flex flex-col items-center justify-center gap-md max-w-layout mx-auto">
+      <div className="flex flex-col items-center justify-center gap-md max-w-layout mx-auto mt-16">
         
         {/* Error Display */}
         {error && (
