@@ -299,7 +299,8 @@ function Dashboard({ onBack, recordingBlob, analysisData }) {
             </div>
             <div className="p-4 space-y-3">
               <div className="text-center">
-                <div className="text-2xl font-bold mb-1">{formatTime(Math.floor(videoDuration))}</div>
+              {/* formatTime(Math.floor(videoDuration)) */}
+                <div className="text-2xl font-bold mb-1">{data.speechLength}</div>
                 <p className="text-emerald-100 text-xs font-medium">Total Duration</p>
               </div>
 

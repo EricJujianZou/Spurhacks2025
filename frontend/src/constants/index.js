@@ -10,7 +10,7 @@
  * Update these URLs when deploying to production or changing backend location
  */
 export const API_CONFIG = {
-  BASE_URL: 'https://7058-99-209-52-138.ngrok-free.app',
+  BASE_URL: 'https://c91d-192-159-180-156.ngrok-free.app',
   ENDPOINTS: {
     ANALYZE: '/api/v1/analyze', // Backend endpoint for complete speech analysis
     HEALTH: '/'

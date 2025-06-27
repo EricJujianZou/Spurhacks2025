@@ -139,7 +139,7 @@ async def analyze(file: UploadFile = File(...)):
     minutes = (total_secs % 3600) // 60
     seconds = total_secs % 60
 
-    time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+    time_str = f"{minutes:02d}:{seconds:02d}"
 
     result_dict["speechLength"] = str(time_str)
 
