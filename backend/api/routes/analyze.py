@@ -2,10 +2,8 @@ import subprocess
 from typing import Union, Tuple
 import re
 import math
-
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
-
 from config import settings
 from exceptions import AudioExtractionError, TranscriptionError, UnsupportedFileType
 from models import SpeechAnalysisResult
